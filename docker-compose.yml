@@ -51,6 +51,7 @@ services:
 
     networks:
       - social_network
+      - dialogs
 
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://social-network-dialogs-backend:8080/api/health-check/ping || exit 1" ]
@@ -63,3 +64,6 @@ volumes:
 
 networks:
   social_network:
+  dialogs:
+    external: true
+    name: dialogs
