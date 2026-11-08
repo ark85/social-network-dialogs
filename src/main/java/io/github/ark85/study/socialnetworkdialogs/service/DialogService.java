@@ -1,0 +1,34 @@
+package io.github.ark85.study.socialnetworkdialogs.service;
+
+import io.github.ark85.study.socialnetworkdialogs.model.DialogMessage;
+import io.github.ark85.study.socialnetworkdialogs.model.api.response.DialogMessageGetResponse;
+import io.github.ark85.study.socialnetworkdialogs.model.api.response.DialogMessageSendResponse;
+import io.github.ark85.study.socialnetworkdialogs.repository.DialogRepository;
+import io.github.ark85.study.socialnetworkdialogs.utils.DialogUtils;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@AllArgsConstructor
+@Validated
+public class DialogService {
+
+    private final DialogRepository dialogRepository;
+
+    public DialogMessageSendResponse sendMessage(UUID fromUserId, UUID toUserId, String text) {
+        UUID dialogId = DialogUtils.generateDialogId(fromUserId, toUserId);
+        DialogMessage dialogMessage = new DialogMessage(
+                null, dialogId, fromUserId, toUserId, text, LocalDateTime.now());
+        return new DialogMessageSendResponse(dialogRepository.createDialogMessage(dialogMessage));
+    }
+
+    public List<DialogMessageGetResponse> getDialogMessages(UUID fromUserId, UUID toUserId) {
+        UUID dialogId = DialogUtils.generateDialogId(fromUserId, toUserId);
+        return dialogRepository.getDialogMessages(dialogId).stream().map(DialogMessageGetResponse::new).toList();
+    }
+}

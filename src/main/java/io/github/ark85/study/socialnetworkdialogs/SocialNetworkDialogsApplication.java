@@ -1,4 +1,4 @@
-package io.github.ark85.study.social_network_dialogs;
+package io.github.ark85.study.socialnetworkdialogs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
