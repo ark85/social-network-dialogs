@@ -1,0 +1,69 @@
+services:
+  tarantool:
+    build: ./compose-configuration/tarantool
+    entrypoint: ["sh", "/opt/tarantool/entrypoint.sh"]
+    command: ["/opt/tarantool/init.lua"]
+    environment:
+      TARANTOOL_USERNAME: ${TARANTOOL_USERNAME}
+      TARANTOOL_PASSWORD: ${TARANTOOL_PASSWORD}
+      SOCIAL_NETWORK_DB_NAME: ${SOCIAL_NETWORK_DB_NAME}
+      SOCIAL_NETWORK_DB_USERNAME: ${SOCIAL_NETWORK_DB_USERNAME}
+      SOCIAL_NETWORK_DB_PASSWORD: ${SOCIAL_NETWORK_DB_PASSWORD}
+    volumes:
+      - ./compose-configuration/tarantool/entrypoint.sh:/opt/tarantool/entrypoint.sh:ro
+      - ./compose-configuration/tarantool/init.lua:/opt/tarantool/init.lua:ro
+      - ./compose-configuration/tarantool/schema.lua:/opt/tarantool/schema.lua:ro
+      - ./compose-configuration/tarantool/import_dialogs.lua:/opt/tarantool/import_dialogs.lua:ro
+      - tarantool_data:/var/lib/tarantool
+    networks:
+      - social_network
+    ports:
+      - "3301:3301"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/3301'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  social-network-dialogs-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8081:8080"
+
+    expose:
+      - 8081
+
+    environment:
+      TARANTOOL_HOST: tarantool
+      TARANTOOL_PORT: 3301
+      TARANTOOL_USERNAME: ${TARANTOOL_USERNAME}
+      TARANTOOL_PASSWORD: ${TARANTOOL_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL}
+
+    depends_on:
+      tarantool:
+        condition: service_healthy
+
+    networks:
+      - social_network
+      - dialogs
+
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://social-network-dialogs-backend:8080/api/health-check/ping || exit 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tarantool_data:
+
+networks:
+  social_network:
+  dialogs:
+    external: true
+    name: dialogs
