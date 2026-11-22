@@ -9,9 +9,15 @@ datasources:
     isDefault: true
     editable: false
   - name: Zabbix
-    type: zabbix
+    type: alexanderzobnin-zabbix-datasource
     uid: zabbix
     access: proxy
-    url: http://zabbix:10051
-    isDefault: true
+    url: http://zabbix-web:8080/api_jsonrpc.php
+    jsonData:
+      authType: userLogin
+      username: ${ZABBIX_ADMIN_USERNAME}
+      trends: true
+    secureJsonData:
+      password: ${ZABBIX_ADMIN_PASSWORD}
+    isDefault: false
     editable: false
