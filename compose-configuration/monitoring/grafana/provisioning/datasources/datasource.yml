@@ -1,0 +1,23 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+  - name: Zabbix
+    type: alexanderzobnin-zabbix-datasource
+    uid: zabbix
+    access: proxy
+    url: http://zabbix-web:8080/api_jsonrpc.php
+    jsonData:
+      authType: userLogin
+      username: ${ZABBIX_ADMIN_USERNAME}
+      trends: true
+    secureJsonData:
+      password: ${ZABBIX_ADMIN_PASSWORD}
+    isDefault: false
+    editable: false

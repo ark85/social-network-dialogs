@@ -1,0 +1,413 @@
+{
+  "uid": "IWqULAigz",
+  "title": "Docker USE",
+  "timezone": "browser",
+  "schemaVersion": 40,
+  "version": 5,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "host",
+        "label": "Host",
+        "type": "query",
+        "datasource": {
+          "type": "alexanderzobnin-zabbix-datasource",
+          "uid": "zabbix"
+        },
+        "query": {
+          "queryType": "host",
+          "group": "/.*/",
+          "host": "/.*/",
+          "application": "",
+          "item": ""
+        },
+        "refresh": 1,
+        "includeAll": false,
+        "regex": "/social-network-dialogs-backend/"
+      },
+      {
+        "name": "container",
+        "label": "Container",
+        "type": "query",
+        "datasource": {
+          "type": "alexanderzobnin-zabbix-datasource",
+          "uid": "zabbix"
+        },
+        "query": {
+          "queryType": "itemTag",
+          "group": "/.*/",
+          "host": "/.*/",
+          "application": "/Docker: Container .*/",
+          "item": "/.*/",
+          "itemTag": "/.*container/"
+        },
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true,
+        "allowCustomValue": false,
+        "regex": "/container:\\s*(.*)/gm"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU utilization",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ CPU percent usage)/" },
+          "functions": []
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory utilization",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Memory usage total)/" },
+          "functions": []
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Network throughput",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "/.*bytes received per second/" },
+            "properties": [{ "id": "custom.transform", "value": "negative-Y" }]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Networks bytes received per second)/" },
+          "functions": []
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Networks bytes sent per second)/" },
+          "functions": []
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Dropped packets",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "pps",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": "/.*outgoing packets dropped per second/" },
+            "properties": [{ "id": "custom.transform", "value": "negative-Y" }]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Networks incoming packets dropped per second)/" },
+          "functions": []
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Networks outgoing packets dropped per second)/" },
+          "functions": []
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Network errors",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "lineWidth": 1,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Networks errors received per second)/" },
+          "functions": []
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Networks errors sent per second)/" },
+          "functions": []
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "OOM killed",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 4, "w": 12, "x": 0, "y": 24 },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ OOMKilled)/" },
+          "functions": []
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Restarts",
+      "datasource": {
+        "type": "alexanderzobnin-zabbix-datasource",
+        "uid": "zabbix"
+      },
+      "gridPos": { "h": 4, "w": 12, "x": 12, "y": 24 },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "value",
+        "wideLayout": true,
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "alexanderzobnin-zabbix-datasource", "uid": "zabbix" },
+          "queryType": "0",
+          "resultFormat": "time_series",
+          "schema": 12,
+          "group": { "filter": "/.*/" },
+          "host": { "filter": "$host" },
+          "application": { "filter": "$container" },
+          "itemTag": { "filter": "$container" },
+          "item": { "filter": "/($container:\\ Restart count)/" },
+          "functions": []
+        }
+      ]
+    }
+  ]
+}
